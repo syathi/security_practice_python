@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if username %}
+        <p>{{ username }}さん、ログインしました</p>
+        <p><a href="mypage">マイページへ</p>
+    {% else %}
+        <p>ログインしてください</p>
+        <p><a href="index">トップページ</a></p>
+    {% endif %}
+{% endblock %}

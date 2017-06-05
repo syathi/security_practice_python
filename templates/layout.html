@@ -1,0 +1,16 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>
+        {% if title %}
+            {{title}}
+        {% else %}
+            title
+        {% endif %}
+    </title>
+</head>
+<body>
+    <h2>secure web sample by python</h2>
+    {% block content %}{% endblock %}
+</body>
+</html>
