@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -11,8 +11,7 @@ dbname = "db-for-secure-web-prac.sqlite3"
 def index():
     print "index"
     title = "toppage"
-    message = "input your name"
-    return render_template("index.html", message=message, title=title)
+    return render_template("index.html", title=title)
 
 
 @app.route("/authorize", methods=["POST"])
@@ -30,7 +29,7 @@ def authorize():
     else:
         return "failed login"
 
-@app.route("/mypage", methods=["GET"])
+@app.route("/mypage/", methods=["GET"])
 def mypage():
     if session.get("username") is not None:
         if request.method == "GET":
@@ -39,6 +38,26 @@ def mypage():
         return render_template("mypage.html", title="mypage", username=session.get("username"), items=items, search=search)
     else:
         return render_template("mypage.html", title="not authorized")
+
+@app.route("/mypage/update", methods=["GET"])
+def update():
+    if session.get("username") is not None:
+        token = session.pop("_csrf_token", None)
+        print token
+        name  = request.args.get("name", "")
+        value = request.args.get("value", "")
+        return render_template("update.html", name=name, value=value)
+    else:
+        return "not authorized"
+
+@app.route("/mypage/create", methods=["POST"])
+def create():
+    newName  = request.form["newname"]
+    newValue = request.form["newvalue"]
+    name     = request.form["name"]
+    value    = request.form["value"]
+    updateData(newName, newValue, name, value)
+    return redirect(url_for("mypage", title="mypage", username=session.get("username")))
 
 def succeedLogin(username, password):
     if len(username) is not 0 and len(password) is not 0:
@@ -53,7 +72,6 @@ def succeedLogin(username, password):
             return user[0][0]
         else:
             return False
-        
     else:
         return False
 
@@ -72,5 +90,16 @@ def searchWord(search):
         items = sqlite.fetchall()
         return items
 
+def updateData(newName, newValue, name, value):
+    print newName + " " + newValue + " " + name + " " + value
+    cnct   = sqlite3.connect(dbname)
+    sqlite = cnct.cursor()
+    stmt = "update goods set name=? , value=? where name=? and value=?"
+    sqlite.execute(stmt, (newName, newValue, name, value))
+    cnct.commit()
+    sqlite.close()
+    cnct.close()
+
 if __name__ == "__main__":
+    app.debug = True
     app.run(host="0.0.0.0")

@@ -1,14 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
     {% if username %}
+        {{ updateMessage }}
         <p>{{ username }}さんのマイページ</p>
-        <form action="mypage" method="GET">
-        所持品検索<input type="text" name="search"></br>
+        <form action="/mypage" method="GET">
+            所持品検索<input type="text" name="search"></br>
+        </form>
         検索ワード：{{ search }}
         <table>
             <th>名称</th><th>価格</th>
             {% for item in items %}
-                <tr><td>{{ item[0] }}</td> <td>{{ item[1] }}</td></tr>
+                <tr><td>{{ item[0] }}</td> <td>{{ item[1] }}</td> 
+                    <td><form action="/mypage/update" method="GET">
+                        <input type="hidden" value="{{ item[0] }}" name="name">
+                        <input type="hidden" value="{{ item[1] }}" name="value">
+                        <input type="submit" value="編集">
+                        </form></tr>
+                </td></tr>
             {% endfor %}
         </table>
     {% else %}

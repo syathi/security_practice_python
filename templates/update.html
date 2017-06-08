@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h3> 編集 </h3>
+    <form action="/mypage/create" method="POST">
+        新しい名前：<input type="text" name="newname"></br>
+        新しい価格；<input type="text" name="newvalue"></br>
+        <input type="hidden" value="{{ name }}" name="name">
+        <input type="hidden" value="{{ value }}" name="value">
+        <input type="submit" value="送信">
+    </form>
+{% endblock %}
